@@ -1,42 +1,73 @@
-#include<stdio.h>
-int main()
-{
-	char ten[100];
-	int cu,moi,sl;
-	float dg;
-	printf("nhap ten khach hang: ");scanf("%s",&ten);
-	printf("nhap chi so dien cu: ");scanf("%d",&cu);
-	printf("nhap chi so dien moi: ");scanf("%d",&moi);
-	printf("ten khach hang: %s",ten);
-	sl=moi-cu;
-	if(sl<=100)
-	{
-		dg=sl*1418;
-		printf("\ntien dien la: %.2f",dg);
-	}
-	else if(sl<=150)
-	{
-		dg=100*1418+(sl-100)*1622;
-		printf("\ntien dien la: %.2f",dg);
-	}
-	else if(sl<=200)
-	{
-		dg=100*1418+50*1622+(sl-150)*2044;
-		printf("\ntien dien la: %.2f",dg);
-	}
-	else if(sl<=300)
-	{
-		dg=100*1418+50*1622+50*2044+(sl-200)*2210;
-		printf("\ntien dien la: %.2f",dg);
-	}
-	else if(sl<=400)
-	{
-		dg=100*1418+50*1622+50*2044+100*2210+(sl-300)*2361;
-		printf("\ntien dien la: %.2f",dg);
-	}
-	else if(sl>400)
-	{
-		dg=100*1418+50*1622+50*2044+100*2210+100*2361+(sl-400)*2420;
-		printf("\ntien dien la: %.2f",dg);
-	}
+#include "vecto.h"
+
+#define VECTOR_INITIAL_CAPACITY 4
+
+void vector_init(Vector* v) {
+    v->size = 0;
+    v->capacity = VECTOR_INITIAL_CAPACITY;
+    v->data = (int*)malloc(v->capacity * sizeof(int));
+    if (!v->data) {
+        printf("Loi: Khong cap phat bo nho!\n");
+        exit(1);
+    }
 }
+
+void vector_free(Vector* v) {
+    free(v->data);
+    v->data = NULL;
+    v->size = 0;
+    v->capacity = 0;
+}
+
+static void vector_resize(Vector* v, int new_capacity) {
+    int* new_data = (int*)realloc(v->data, new_capacity * sizeof(int));
+    if (!new_data) {
+        printf("Loi: Khong cap phat lai bo nho!\n");
+        exit(1);
+    }
+    v->data = new_data;
+    v->capacity = new_capacity;
+}
+
+void vector_push_back(Vector* v, int value) {
+    if (v->size == v->capacity)
+        vector_resize(v, v->capacity * 2);
+    v->data[v->size++] = value;
+}
+
+int vector_get(Vector* v, int index) {
+    if (index < 0 || index >= v->size) {
+        printf("Loi: Index %d khong hop le!\n", index);
+        exit(1);
+    }
+    return v->data[index];
+}
+
+void vector_set(Vector* v, int index, int value) {
+    if (index >= 0 && index < v->size)
+        v->data[index] = value;
+}
+
+void vector_pop_back(Vector* v) {
+    if (v->size > 0)
+        v->size--;
+}
+
+void vector_remove_at(Vector* v, int index) {
+    if (index < 0 || index >= v->size)
+        return;
+    memmove(&v->data[index], &v->data[index + 1], (v->size - index - 1) * sizeof(int));
+    v->size--;
+}
+
+void vector_print(Vector* v) {
+    printf("Vector (Size: %d, Capacity: %d)\nData: [ ", v->size, v->capacity);
+    for (int i = 0; i < v->size; i++)
+        printf("%d ", v->data[i]);
+    printf("]\n\n");
+}
+
+int vector_size(Vector* v) {
+    return v->size;
+}
+
